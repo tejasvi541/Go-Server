@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -12,8 +13,14 @@ var DB *sql.DB
 // Connect initializes the database connection and returns the *sql.DB instance
 func Connect() {
 	// Open a connection to the PostgreSQL database
+	connStr := "user=" + os.Getenv("DB_USER") +
+		" dbname=" + os.Getenv("DB_NAME") +
+		" password=" + os.Getenv("DB_PASSWORD") +
+		" host=" + os.Getenv("DB_HOST") +
+		" port=" + os.Getenv("DB_PORT") +
+		" sslmode=disable"
 	var err error
-	DB, err = sql.Open("postgres", "user=postgres dbname=events password=12345678 sslmode=disable")
+	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal("Error opening database connection:", err)
 	}

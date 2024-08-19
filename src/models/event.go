@@ -18,6 +18,10 @@ type Event struct {
 
 // Save inserts a new event into the database
 func (e *Event) Save() error {
+	if e.DateTime.IsZero() {
+		e.DateTime = time.Now() // Set DateTime to current time if it's not set
+	}
+
 	query := `
 		INSERT INTO events (name, description, location, date_time, user_id)
 		VALUES ($1, $2, $3, $4, $5)

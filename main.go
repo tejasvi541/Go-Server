@@ -57,7 +57,7 @@ func main() {
 	})
 
 	// Start the server on port 8088
-	if err := server.Run(":8088"); err != nil {
+	if err := server.Run(":8080"); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }

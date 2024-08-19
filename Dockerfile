@@ -1,27 +1,33 @@
+# Stage 1: Build the Go binary
 FROM golang:1.23.0 AS builder
 
 WORKDIR /app
 
-COPY go.* ./
-
+# Cache go.mod and go.sum files and download dependencies
+COPY go.mod go.sum ./
 RUN go mod download
 
+# Copy the entire application source code
 COPY . .
 
-# Build the Go app
+# Build the Go application
 RUN go build -o main .
 
-# Start a new stage from scratch
-FROM debian:bullseye-slim
+# Stage 2: Create a minimal runtime image
+FROM ubuntu:22.04
 
-# Set the Current Working Directory inside the container
 WORKDIR /app
 
-# Copy the Pre-built binary file from the previous stage
+# Install necessary libraries
+RUN apt-get update && \
+    apt-get install -y libc6 && \
+    apt-get clean
+
+# Copy the Go binary from the builder stage
 COPY --from=builder /app/main .
 
-# Expose port 8080 to the outside world
-EXPOSE 8080
+# Expose the port on which the app will run
+EXPOSE 8080 
 
-# Command to run the executable
+# Run the Go binary
 CMD ["./main"]
