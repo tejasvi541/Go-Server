@@ -12,6 +12,11 @@ import (
 func main() {
 	// Connect to the database
 	db.Connect()
+
+	// Create tables if they do not exist
+	db.CreateTables()
+
+	// Ensure the database connection is closed when the application exits
 	defer func() {
 		if err := db.DB.Close(); err != nil {
 			log.Fatalf("Failed to close database connection: %v", err)
