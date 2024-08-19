@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  go-server:
+    image: tejasvix/go-server
+    container_name: go-server
+    working_dir: /src
+    volumes:
+      - .:/src
+    command: go run main.go # Adjust if you have a different entry point
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=12345678
+      - DB_NAME=events
+
+  postgres:
+    image: postgres:14 # Use the appropriate version
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: events
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
