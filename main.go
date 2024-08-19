@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tejasvi541/Go-Server/src/db"
@@ -27,17 +28,48 @@ func main() {
 	server := gin.Default()
 
 	// Route to get all events
-	server.GET("/events", func(c *gin.Context) {
+	server.GET("/events", getEvents)
+
+	// Route to get sigle event
+	server.GET("/events/:id", getEventById)
+
+	// Route to create a new event
+	server.POST("/events", createEvent)
+
+	// Start the server on port 8088
+	if err := server.Run(":8080"); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
+}
+
+func getEvents(c *gin.Context) {
 		events, err := models.GetAllEvents()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, events)
-	})
+}
 
-	// Route to create a new event
-	server.POST("/events", func(c *gin.Context) {
+func getEventById(c *gin.Context) {
+		eventId, err := strconv.ParseInt(c.Param("id"), 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event ID"})
+			return
+		}
+
+		event, err := models.GetEventById(eventId)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, event)
+
+}
+
+func createEvent(c *gin.Context) {
 		var event models.Event
 		if err := c.ShouldBindJSON(&event); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -54,10 +86,4 @@ func main() {
 		}
 
 		c.JSON(http.StatusCreated, event)
-	})
-
-	// Start the server on port 8088
-	if err := server.Run(":8080"); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
 	}
-}

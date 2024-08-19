@@ -2,23 +2,27 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 var DB *sql.DB
 
+
 // Connect initializes the database connection and returns the *sql.DB instance
 func Connect() {
 	// Open a connection to the PostgreSQL database
+	godotenv.Load()
 	connStr := "user=" + os.Getenv("DB_USER") +
 		" dbname=" + os.Getenv("DB_NAME") +
 		" password=" + os.Getenv("DB_PASSWORD") +
-		" host=" + os.Getenv("DB_HOST") +
 		" port=" + os.Getenv("DB_PORT") +
 		" sslmode=disable"
+	
 	var err error
 	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
@@ -30,7 +34,7 @@ func Connect() {
 
 	// Set maximum number of open connections
 	DB.SetMaxOpenConns(100)
-
+	fmt.Println(connStr, "connStr")
 	// Verify the connection is valid
 	if err = DB.Ping(); err != nil {
 		log.Fatal("Error pinging database:", err)
