@@ -22,4 +22,7 @@ func RegisterRoutes(server *gin.Engine) {
 
 	// Signup route
 	server.POST("/signup", signup)
+
+	// Login route
+	server.POST("/login", login)
 }
