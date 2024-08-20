@@ -93,3 +93,21 @@ func (e *Event) DeleteEvent() error {
 	_, err = stmt.Exec(e.ID)
 	return err
 }
+
+func (e *Event)RegisterEvent(userId, eventId int64) error {
+	query := `
+		INSERT INTO registrations (event_id, user_id)
+		VALUES ($1, $2)
+	`
+	_, err := db.DB.Exec(query, eventId, userId)
+	return err
+}
+
+func (e *Event)UnregisterEvent(userId, eventId int64) error {
+	query := `
+		DELETE FROM registrations
+		WHERE event_id = $1 AND user_id = $2
+	`
+	_, err := db.DB.Exec(query, eventId, userId)
+	return err
+}

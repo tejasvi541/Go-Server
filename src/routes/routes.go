@@ -26,4 +26,10 @@ func RegisterRoutes(server *gin.Engine) {
 
 	// Login route
 	server.POST("/login", login)
+
+	// Register Event route
+	server.POST("/register", middleware.Authenticate, registerEvent)
+
+	// Unregister Event route
+	server.POST("/unregister", middleware.Authenticate, unregisterEvent)
 }

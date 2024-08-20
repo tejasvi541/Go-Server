@@ -72,8 +72,22 @@ func CreateTables() {
 			FOREIGN KEY (user_id) REFERENCES users (id)
 		);
 	`
-
 	_, err = DB.Exec(createEventsTable)
+	if err != nil {
+		log.Fatal("Error creating tables:", err)
+		panic(err)
+	}
+	createRegistrationsTable := `
+		CREATE TABLE IF NOT EXISTS registrations (
+			id SERIAL PRIMARY KEY,
+			event_id INT NOT NULL,
+			user_id INT NOT NULL,
+			FOREIGN KEY (event_id) REFERENCES events (id),
+			FOREIGN KEY (user_id) REFERENCES users (id)
+		);
+	`
+
+	_, err = DB.Exec(createRegistrationsTable)
 	if err != nil {
 		log.Fatal("Error creating tables:", err)
 		panic(err)
