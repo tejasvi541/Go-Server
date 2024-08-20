@@ -19,4 +19,7 @@ func RegisterRoutes(server *gin.Engine) {
 
 	// Route to delete an event
 	server.DELETE("/events/:id", deleteEvent)
+
+	// Signup route
+	server.POST("/signup", signup)
 }

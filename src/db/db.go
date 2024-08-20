@@ -43,6 +43,24 @@ func Connect() {
 
 // CreateTables creates necessary tables in the database
 func CreateTables() {
+
+	// Create the users table
+	createUsersTable := `
+		CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			username TEXT NOT NULL,
+			email TEXT NOT NULL,
+			password TEXT NOT NULL
+		);
+	`
+
+	_, err := DB.Exec(createUsersTable)
+
+	if err != nil {
+		log.Fatal("Error creating tables:", err)
+		panic(err)
+	}
+
 	createEventsTable := `
 		CREATE TABLE IF NOT EXISTS events (
 			id SERIAL PRIMARY KEY,
@@ -50,12 +68,14 @@ func CreateTables() {
 			description TEXT NOT NULL,
 			location TEXT NOT NULL,
 			date_time TIMESTAMP NOT NULL,
-			user_id INT NOT NULL
+			user_id INT NOT NULL,
+			FOREIGN KEY (user_id) REFERENCES users (id)
 		);
 	`
 
-	_, err := DB.Exec(createEventsTable)
+	_, err = DB.Exec(createEventsTable)
 	if err != nil {
 		log.Fatal("Error creating tables:", err)
+		panic(err)
 	}
 }
