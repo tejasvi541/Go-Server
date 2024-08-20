@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   go-server:
-    image: tejasvix/go-server
+    image: tejasvix/go-server:latest
     container_name: go-server
     ports:
       - "8080:8080"

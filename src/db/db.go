@@ -15,13 +15,17 @@ var DB *sql.DB
 
 // Connect initializes the database connection and returns the *sql.DB instance
 func Connect() {
-	// Open a connection to the PostgreSQL database
-	godotenv.Load()
-	connStr := "user=" + os.Getenv("DB_USER") +
-		" dbname=" + os.Getenv("DB_NAME") +
-		" password=" + os.Getenv("DB_PASSWORD") +
-		" port=" + os.Getenv("DB_PORT") +
-		" sslmode=disable"
+	user := getEnv("DB_USER", "postgres")
+	password := getEnv("DB_PASSWORD", "12345678")
+	port := getEnv("DB_PORT", "5432")
+	dbname := getEnv("DB_NAME", "events")
+
+	// Create connection string
+	connStr := fmt.Sprintf("user=%s dbname=%s password=%s port=%s sslmode=disable",
+		user,
+		dbname,
+		password,
+		port)
 	
 	var err error
 	DB, err = sql.Open("postgres", connStr)
@@ -92,4 +96,13 @@ func CreateTables() {
 		log.Fatal("Error creating tables:", err)
 		panic(err)
 	}
+}
+// getEnv retrieves the value of an environment variable or returns a default value if the variable is not set
+func getEnv(key, defaultValue string) string {
+	godotenv.Load(".env")
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	return value
 }
