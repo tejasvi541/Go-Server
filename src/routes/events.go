@@ -38,19 +38,6 @@ func getEventById(c *gin.Context) {
 
 func createEvent(c *gin.Context) {
 
-		token := c.Request.Header.Get("Authorization")
-
-		if token == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token not provided"})
-			return
-		}
-
-		_, err := models.ValidateToken(token)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-			return
-		}
-
 		var event models.Event
 		if err := c.ShouldBindJSON(&event); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -58,7 +45,7 @@ func createEvent(c *gin.Context) {
 		}
 
 		// Set a default UserID for demonstration purposes
-		event.UserID = 1
+		event.UserID = c.MustGet("userID").(int64)
 
 		// Save the event
 		if err := event.Save(); err != nil {
@@ -76,9 +63,16 @@ func updateEvent(c *gin.Context) {
 			return
 		}
 
-		_, err = models.GetEventById(eventId)
+		event, err := models.GetEventById(eventId)
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+			return
+		}
+
+		userId := c.MustGet("userID").(int64)
+
+		if event.UserID != userId {
+			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to update this event"})
 			return
 		}
 
@@ -109,6 +103,12 @@ func deleteEvent(c *gin.Context) {
 		}
 
 		event, err := models.GetEventById(eventId)
+		userId := c.MustGet("userID").(int64)
+
+		if event.UserID != userId {
+			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this event"})
+			return
+		}
 
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})

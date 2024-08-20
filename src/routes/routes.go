@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/tejasvi541/Go-Server/middleware"
 )
 
 func RegisterRoutes(server *gin.Engine) {
@@ -12,13 +13,13 @@ func RegisterRoutes(server *gin.Engine) {
 	server.GET("/events/:id", getEventById)
 
 	// Route to create a new event
-	server.POST("/events", createEvent)
+	server.POST("/events", middleware.Authenticate, createEvent)
 
 	// Route to update an event
-	server.PUT("/events/:id", updateEvent)
+	server.PUT("/events/:id", middleware.Authenticate, updateEvent)
 
 	// Route to delete an event
-	server.DELETE("/events/:id", deleteEvent)
+	server.DELETE("/events/:id", middleware.Authenticate,  deleteEvent)
 
 	// Signup route
 	server.POST("/signup", signup)

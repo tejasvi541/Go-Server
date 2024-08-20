@@ -13,7 +13,7 @@ type Event struct {
 	Description string    `json:"description" binding:"required"`
 	Location    string    `json:"location" binding:"required"`
 	DateTime    time.Time `json:"dateTime"`
-	UserID      int       `json:"userId"`
+	UserID      int64       `json:"userId"`
 }
 
 // Save inserts a new event into the database
